@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, SyntheticEvent } from 'react';
+import { useState, useRef, SyntheticEvent } from 'react';
 import { ArrowButton } from 'components/arrow-button';
 import { Button } from 'components/button';
 import { Spacing } from 'components/spacing';
@@ -6,6 +6,7 @@ import { RadioGroup } from 'components/radio-group';
 import { Separator } from 'components/separator';
 import { Select } from 'components/select';
 import { Text } from 'components/text';
+import { useClose } from 'components/hooks/useClose';
 
 import {
 	fontFamilyOptions,
@@ -22,19 +23,15 @@ import clsx from 'clsx';
 
 import styles from './ArticleParamsForm.module.scss';
 
-export type StateArticleParamsForm = 'open' | 'close';
-
 export type ArticleParamsFormProps = {
-	onChangeStateArticle: (config: ArticleStateType) => void;
+	onChange: React.Dispatch<React.SetStateAction<ArticleStateType>>;
 };
 
-export const ArticleParamsForm = ({
-	onChangeStateArticle,
-}: ArticleParamsFormProps) => {
+export const ArticleParamsForm = ({ onChange }: ArticleParamsFormProps) => {
 	const defaultStateForm = useRef<ArticleStateType>(defaultArticleState);
 	const asideRef = useRef<HTMLDivElement | null>(null);
 
-	const [state, setState] = useState<StateArticleParamsForm>('close');
+	const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
 
 	const [fontFamily, setfontFamily] = useState<OptionType>(
 		defaultStateForm.current.fontFamilyOption
@@ -52,8 +49,14 @@ export const ArticleParamsForm = ({
 		defaultStateForm.current.contentWidth
 	);
 
-	const toggleState = () => {
-		setState(state === 'close' ? 'open' : 'close');
+	useClose({
+		isOpen: isMenuOpen,
+		onClose: () => setIsMenuOpen(false),
+		rootRef: asideRef,
+	});
+
+	const toggleStateMenu = () => {
+		setIsMenuOpen((prev) => !prev);
 	};
 
 	const changefontFamily = (option: OptionType) => {
@@ -74,7 +77,7 @@ export const ArticleParamsForm = ({
 
 	const handleOnSubmitForm = (e: SyntheticEvent) => {
 		e.preventDefault();
-		onChangeStateArticle({
+		onChange({
 			fontFamilyOption: fontFamily,
 			fontColor: fontColor,
 			backgroundColor: backgroundColor,
@@ -84,7 +87,7 @@ export const ArticleParamsForm = ({
 	};
 
 	const handleOnClickButtonReset = () => {
-		onChangeStateArticle(defaultStateForm.current);
+		onChange(defaultStateForm.current);
 
 		setfontFamily(defaultStateForm.current.fontFamilyOption);
 		setfontSize(defaultStateForm.current.fontSizeOption);
@@ -93,23 +96,12 @@ export const ArticleParamsForm = ({
 		setContentWidth(defaultStateForm.current.contentWidth);
 	};
 
-	useEffect(() => {
-		if (state !== 'open') return;
-		const closeOverlay = (e: MouseEvent) => {
-			e.target === e.currentTarget && setState('close');
-		};
-		asideRef.current?.addEventListener('click', closeOverlay);
-		return () => {
-			asideRef.current?.removeEventListener('click', closeOverlay);
-		};
-	});
-
 	return (
-		<div ref={asideRef} className={clsx(styles.overlay)}>
-			<ArrowButton onClick={toggleState} state={state} />
+		<div ref={asideRef}>
+			<ArrowButton onClick={toggleStateMenu} isMenuOpen={isMenuOpen} />
 			<aside
 				className={clsx(styles.container, {
-					[styles.container_open]: state === 'open',
+					[styles.container_open]: isMenuOpen,
 				})}>
 				<form className={styles.form} onSubmit={handleOnSubmitForm}>
 					<Text as='h2' size={31} weight={800} uppercase>

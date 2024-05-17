@@ -96,11 +96,11 @@ export const ArticleParamsForm = ({
 	useEffect(() => {
 		if (state !== 'open') return;
 		const closeOverlay = (e: MouseEvent) => {
-			e.target === asideRef.current && setState('close');
+			e.target === e.currentTarget && setState('close');
 		};
-		document.addEventListener('click', closeOverlay);
+		asideRef.current?.addEventListener('click', closeOverlay);
 		return () => {
-			document.removeEventListener('click', closeOverlay);
+			asideRef.current?.removeEventListener('click', closeOverlay);
 		};
 	});
 

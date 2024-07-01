@@ -14,7 +14,7 @@
 
 ![Preview image](assets/blog-customize.png)
 
-<details><summary>DEMO Stellar Burgers</summary>
+<details><summary>DEMO Вёрстка проекта</summary>
 
 ![Preview image](assets/blog-customizer.gif)
 

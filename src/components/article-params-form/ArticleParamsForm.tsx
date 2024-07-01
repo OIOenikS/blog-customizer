@@ -143,7 +143,7 @@ export const ArticleParamsForm = ({ onChange }: ArticleParamsFormProps) => {
 						options={contentWidthArr}
 						selected={contentWidth}
 						onChange={changeContentWidth}
-						title='ширина контентат'
+						title='ширина контента'
 					/>
 					<Spacing size={207} />
 					<div className={styles.bottomContainer}>
